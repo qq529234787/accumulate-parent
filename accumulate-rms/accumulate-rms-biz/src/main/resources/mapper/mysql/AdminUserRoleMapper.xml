@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminUserRoleMapper">
+
+  <resultMap id="BaseResultMap" type="com.wme.rms.entity.user.AdminUserRole" >
+    <id column="user_role_id" property="userRoleId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    user_role_id, user_id, role_id, status, created, modifyed
+  </sql>
+
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_user_role
+    where user_role_id = #{userRoleId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectUserRole" resultMap="BaseResultMap" parameterType="com.wme.rms.entity.user.AdminUserRole" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_user_role
+    where status != -1
+    <if test="userRoleId != null and userRoleId != ''">and user_role_id = #{userRoleId}</if>
+	<if test="userId != null and userId != ''">and user_id = #{userId}</if>
+	<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+  </select>
+
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from admin_user_role
+    where user_role_id = #{userRoleId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="save" parameterType="com.wme.rms.entity.user.AdminUserRole" >
+    insert into admin_user_role
+    (
+        user_role_id,
+        user_id,
+        role_id,
+        status,
+        created,
+        modifyed
+    ) values (
+        #{userRoleId,jdbcType=BIGINT},
+        #{userId,jdbcType=BIGINT},
+        #{roleId,jdbcType=BIGINT},
+        #{status,jdbcType=INTEGER},
+        #{created,jdbcType=TIMESTAMP},
+        #{modifyed,jdbcType=TIMESTAMP}
+    )
+  </insert>
+  
+  <!-- 批量添加 适用于主键自增类型  不支持返回主键-->
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">
+    insert into admin_user_role
+    (
+      user_role_id,
+      user_id,
+      role_id,
+      status,
+      created,
+      modifyed
+    ) values
+	<foreach item="item" collection="list" separator="," >
+      (
+        #{userRoleId,jdbcType=BIGINT},
+        #{userId,jdbcType=BIGINT},
+        #{roleId,jdbcType=BIGINT},
+        #{status,jdbcType=INTEGER},
+        #{created,jdbcType=TIMESTAMP},
+        #{modifyed,jdbcType=TIMESTAMP}
+      )
+	</foreach>
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.wme.rms.entity.user.AdminUserRole" >
+    insert into admin_user_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userRoleId != null" >
+        user_role_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="modifyed != null" >
+        modifyed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userRoleId != null" >
+        #{userRoleId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wme.rms.entity.user.AdminUserRole" >
+    update admin_user_role
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        modifyed = #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_role_id = #{userRoleId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByUserId" parameterType="com.wme.rms.entity.user.AdminUserRole" >
+    update admin_user_role
+    set status = #{status},
+    modifyed = #{modifyed}
+    where user_id = #{userId}
+  </update>
+  
+  <update id="update" parameterType="com.wme.rms.entity.user.AdminUserRole" >
+    update admin_user_role
+    set user_id = #{userId,jdbcType=BIGINT},
+      role_id = #{roleId,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
+      created = #{created,jdbcType=TIMESTAMP},
+      modifyed = #{modifyed,jdbcType=TIMESTAMP}
+    where user_role_id = #{userRoleId,jdbcType=BIGINT}
+  </update>
+
+</mapper>

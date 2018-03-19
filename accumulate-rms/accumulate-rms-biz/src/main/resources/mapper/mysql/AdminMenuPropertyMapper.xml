@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminMenuPropertyMapper">
+
+  <resultMap id="BaseResultMap" type="com.wme.rms.entity.menu.AdminMenuProperty" >
+    <id column="menu_property_id" property="menuPropertyId" jdbcType="BIGINT" />
+    <result column="property_name" property="propertyName" jdbcType="VARCHAR" />
+    <result column="menu_id" property="menuId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    menu_property_id, property_name, menu_id, status, created, modifyed
+  </sql>
+
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select  <include refid="Base_Column_List" /> from admin_menu_property
+    where menu_property_id = #{menuPropertyId}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    update admin_menu_property
+    set status = -1,modifyed = now()
+    where menu_property_id = #{menuPropertyId}
+  </delete>
+
+  <insert id="save" parameterType="com.wme.rms.entity.menu.AdminMenuProperty"  useGeneratedKeys="true" keyProperty="menuPropertyId">
+    insert into admin_menu_property (property_name, menu_id, status, created, modifyed)
+    values (#{propertyName}, #{menuId}, #{status}, now(), now())
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.wme.rms.entity.menu.AdminMenuProperty" >
+    update admin_menu_property
+    set property_name = #{propertyName},
+      menu_id = #{menuId},
+      status = #{status},
+      created = #{created},
+      modifyed = #{modifyed}
+    where menu_property_id = #{menuPropertyId}
+  </update>
+</mapper>

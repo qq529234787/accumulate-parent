@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="base">
+
+    <sql id="currentTimeM">
+        select sysdate() from dual
+    </sql>
+
+    <sql id="paginationLimit">
+        limit #{startRow},#{pageSize}
+    </sql>
+
+    <sql id="currentTimeO">
+        select sysdate from dual
+    </sql>
+
+    <sql id="paginationStartO">
+        <![CDATA[
+                    select * from (select row_.*, rownum rownum_ from (
+                ]]>
+    </sql>
+    <sql id="paginationEndO">
+        <![CDATA[
+                     )row_ where rownum <= #{endRow} ) where rownum_ > #{startRow}
+                ]]>
+    </sql>
+</mapper>

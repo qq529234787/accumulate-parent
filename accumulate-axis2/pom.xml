@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>accumulate-parent</artifactId>
+        <groupId>com.wme</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>accumulate-axis2</artifactId>
+    <version>${publish_version}</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>accumulate-axis2-biz</module>
+        <module>accumulate-axis2-bundle</module>
+        <module>accumulate-axis2-web</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.wme</groupId>
+                <artifactId>accumulate-axis2-biz</artifactId>
+                <version>${publish_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wme</groupId>
+                <artifactId>accumulate-axis2-web</artifactId>
+                <version>${publish_version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

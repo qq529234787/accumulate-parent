@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminUserMapper">
+
+  <resultMap id="AdminUserResultMap" type="com.wme.rms.entity.user.AdminUser" >
+    <id column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="login_name" property="loginName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="department_id" property="departmentId" jdbcType="BIGINT" />
+    <result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    user_id, login_name, status, department_id, created, modifyed
+  </sql>
+
+  <select id="get" resultMap="AdminUserResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_user
+    where user_id = #{userId,jdbcType=BIGINT} and status != -1
+  </select>
+  
+  <select id="selectUser" resultMap="AdminUserResultMap" parameterType="com.wme.rms.entity.user.AdminUser" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_user
+    where status != -1
+    <if test="userId != null and userId != ''">and user_id = #{userId}</if>
+	<if test="departmentId != null and departmentId != ''">and department_id = #{departmentId}</if>
+	<if test="loginName != null and loginName != ''">and login_name = #{loginName}</if>
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from admin_user
+    where user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="save" parameterType="com.wme.rms.entity.user.AdminUser" useGeneratedKeys="true" keyProperty="userId">
+    insert into admin_user
+    (
+        user_id,
+        login_name,
+        status,
+        department_id,
+        created,
+        modifyed
+    ) values (
+        #{userId,jdbcType=BIGINT},
+        #{loginName,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER},
+        #{departmentId,jdbcType=BIGINT},
+        #{created,jdbcType=TIMESTAMP},
+        #{modifyed,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.wme.rms.entity.user.AdminUser" >
+    insert into admin_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="loginName != null" >
+        login_name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="departmentId != null" >
+        department_id,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="modifyed != null" >
+        modifyed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="loginName != null" >
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="departmentId != null" >
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wme.rms.entity.user.AdminUser" >
+    update admin_user
+    <set >
+      <if test="loginName != null" >
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="departmentId != null" >
+        department_id = #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        modifyed = #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.wme.rms.entity.user.AdminUser" >
+    update admin_user
+    set login_name = #{loginName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      department_id = #{departmentId,jdbcType=BIGINT},
+      created = #{created,jdbcType=TIMESTAMP},
+      modifyed = #{modifyed,jdbcType=TIMESTAMP}
+    where user_id = #{userId,jdbcType=BIGINT}
+  </update>
+  
+  <sql id="page_where">
+  	where u.status != -1
+	<if test="userId != null and userId != ''">and u.user_id = #{userId}</if>
+	<if test="departmentId != null and departmentId != ''">and u.department_id = #{departmentId}</if>
+	<if test="loginName != null and loginName != ''">and u.login_name like concat('%',#{loginName},'%')</if>
+	<if test="status != null and status != ''">and u.status = #{status}</if>
+  </sql>
+  
+  <select id="pageList" resultMap="AdminUserResultMap" parameterType="java.util.Map">
+	select u.user_id,d.department_name,u.login_name,u.status,u.created,u.modifyed
+	from admin_user as u
+      left join admin_department as d on u.department_id = d.department_id
+	<include refid="page_where" />
+	order by u.user_id desc limit #{startIndex},#{pageSize}
+  </select>
+	
+  <select id="count" resultType="int" parameterType="java.util.Map">
+	select count(u.user_id)
+	from admin_user as u
+      left join admin_department as d on u.department_id = d.department_id
+	<include refid="page_where" />
+  </select>
+	
+  <!-- 其他自定义SQL -->
+
+</mapper>

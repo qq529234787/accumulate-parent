@@ -1,0 +1,16 @@
+@charset "utf-8";
+/* CSS Document */
+.grey{color:#999;}
+/*content*/
+.center{text-align:center; font-weight:bold;}
+.tab a{color:#fff;}
+
+.content{ width:100%; min-width:1024px;}
+.content_box{margin:0px 10px 10px 10px;}
+.infolist table{border-top:1px solid #d9d9d9;border-left:1px solid #d9d9d9; font-size:12px;}
+.infolist table tr td{border-bottom:1px solid #d9d9d9;border-right:1px solid #d9d9d9;}
+.mt7{margin-top:7px;}
+.list_date{margin-right:10px;}
+.line_g{line-height:32px;}
+.hover_bg:hover{background:#fefad1;}
+

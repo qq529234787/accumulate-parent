@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serviceGroup>
+	<!--订单ws-->
+	<service name="helloWorldWS">
+		<description>This is the service for helloWord</description>
+		<parameter name="ServiceObjectSupplier">org.apache.axis2.extensions.spring.receivers.SpringServletContextObjectSupplier</parameter>
+		<!--通过spring注入-->
+		<parameter name="SpringBeanName">helloWorldWS</parameter>
+		<!--订单生成-->
+		<operation name="sayHello">
+			<messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+			<actionMapping>urn:sayHello</actionMapping>
+		</operation>
+	</service>
+
+</serviceGroup>

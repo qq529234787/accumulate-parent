@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>jQuery MultiSelect Plugin Tests</title>
+	<link rel="stylesheet" type="text/css" href="jquery.multiselect.css" />
+	<!--<link rel="stylesheet" type="text/css" href="jquery.multiselect.filter.css" />-->
+	<link rel="stylesheet" type="text/css" href="../jquery-ui-1.12.1/jquery-ui.css" />
+
+	<script type="text/javascript" src="../jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="../jquery-ui-1.12.1/jquery-ui.js"></script>
+	<script type="text/javascript" src="src/jquery.multiselect.js"></script>
+	<script type="text/javascript" src="i18n/jquery.multiselect.zh-cn.js"></script>
+	<!--<script type="text/javascript" src="src/jquery.multiselect.filter.js"></script>
+	<script type="text/javascript" src="i18n/jquery.multiselect.filter.zh-cn.js"></script>-->
+
+	<script type="text/javascript">
+		$(function(){
+			var multiObj = $("#test").multiselect({
+				multiple: true,
+				//header: "请选择",
+				//noneSelectedText: "请选择",
+				selectedList: 3
+			}); // 多选下拉列表初始化
+
+			// 初始化选项
+			var ids = "1,3".split(',');
+			if (ids != null) {
+				multiObj.val(ids);
+				multiObj.multiselect("refresh"); // multiObj.multiselect('uncheckAll'); 默认都不选中
+			}
+
+			// 循环下拉列表的checkbox
+			multiObj.multiselect("widget").find(":checkbox").each(function(){
+				//alert(this.value);
+				// this.click();
+			});
+
+			// 方法一：获取选中值
+			var checkedValueArr = multiObj.multiselect("getChecked").map(function(){
+				return this.value;
+			}).get();
+			alert(checkedValueArr.join(","));
+
+			// 方法一：获取选中项
+			$("#btnok").click(function(){
+				var ids=[];
+				$("#test :checked").each(function(i,item){
+					ids.push($(item).attr("value"));
+				});
+				alert(ids.join(","))
+			});
+
+		});
+	</script>
+</head>
+<body>
+<form>
+		<select multiple id="test">
+			<option value="1">上</option>
+			<option value="2">下</option>
+			<option value="3">左</option>
+			<option value="4">右</option>
+		</select>
+		<input type="button" value="ok" id="btnok">
+</form>
+</body>
+</html>

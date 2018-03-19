@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig" scope="singleton">
+        <!-- 保持的最大活跃连接数 -->
+        <property name="maxTotal" value="${redis.normal.maxTotal}" />
+        <!-- 最大的空闲连接数 -->
+        <property name="maxIdle" value="${redis.normal.maxIdle}" />
+        <!-- 最大的空闲连接数 -->
+        <property name="maxWaitMillis" value="${redis.normal.maxWait}" />
+        <!-- 最小的空闲连接数 -->
+        <property name="minIdle" value="${redis.normal.minIdle}" />
+        <!-- 是否开启建立时验证，如果验证失败，将不加入队列 -->
+        <property name="testOnBorrow" value="true" />
+        <!-- 是否开启放回队列时验证，如果验证失败，将不加入队列 -->
+        <property name="testOnReturn" value="true" />
+        <!-- 是否开启等待状态转换到活动状态时验证，如果验证失败，将不加入队列 -->
+        <property name="testWhileIdle" value="true" />
+        <!-- -->
+        <property name="blockWhenExhausted" value="true"/>
+    </bean>
+    <bean id="redisPool" class="redis.clients.jedis.JedisPool" scope="singleton">
+        <constructor-arg>
+            <ref bean="poolConfig" />
+        </constructor-arg>
+        <constructor-arg>
+            <value>${redis.normal.host.1}</value>
+        </constructor-arg>
+        <constructor-arg>
+            <value>${redis.normal.port}</value>
+        </constructor-arg>
+        <constructor-arg>
+            <value>2000</value>
+        </constructor-arg>
+        <!--<constructor-arg>
+            <value>redis_1_23</value>
+        </constructor-arg>-->
+    </bean>
+    <bean id="emailJedisClient" class="com.wme.cache.redis.JedisClient" scope="singleton">
+        <property name="jedisPool" ref="redisPool" />
+        <property name="db" value="${redis.normal.db.email}" />
+    </bean>
+    <!--<bean id="smsJedisClient" class="JedisClient" scope="singleton">
+        <property name="jedisPool" ref="redisPool" />
+        <property name="db" value="${redis.normal.db.sms}" />
+    </bean>-->
+
+</beans>

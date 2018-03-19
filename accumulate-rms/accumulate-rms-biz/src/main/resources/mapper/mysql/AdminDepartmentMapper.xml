@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminDepartmentMapper">
+
+  <resultMap id="AdminDepartmentResultMap" type="com.wme.rms.entity.department.AdminDepartment" >
+    <id column="department_id" property="departmentId" jdbcType="BIGINT" />
+    <result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    department_id, department_name, status, created, modifyed
+  </sql>
+
+  <select id="get" resultMap="AdminDepartmentResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_department
+    where department_id = #{departmentId,jdbcType=BIGINT}
+    and status != -1
+  </select>
+  
+  <select id="selectDepartment" resultMap="AdminDepartmentResultMap" parameterType="com.wme.rms.entity.department.AdminDepartment" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_department
+    <trim prefix="where" prefixOverrides="and | or ">
+		<if test="departmentId != null and departmentId != ''">and department_id = #{departmentId}</if>
+		<if test="departmentName != null and departmentName != ''">and department_name = #{departmentName}</if>
+		<if test="status != null and status != ''">and status = #{status}</if>
+	</trim>
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from admin_department
+    where department_id = #{departmentId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="save" parameterType="com.wme.rms.entity.department.AdminDepartment">
+    insert into admin_department
+    (
+      department_id,
+      department_name,
+      status,
+      created,
+      modifyed
+    )
+    values (
+      #{departmentId,jdbcType=BIGINT},
+      #{departmentName,jdbcType=VARCHAR},
+      #{status,jdbcType=INTEGER},
+      #{created,jdbcType=TIMESTAMP},
+      #{modifyed,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.wme.rms.entity.department.AdminDepartment" >
+    insert into admin_department
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="departmentId != null" >
+        department_id,
+      </if>
+      <if test="departmentName != null" >
+        department_name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="modifyed != null" >
+        modifyed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="departmentId != null" >
+        #{departmentId,jdbcType=BIGINT},
+      </if>
+      <if test="departmentName != null" >
+        #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wme.rms.entity.department.AdminDepartment" >
+    update admin_department
+    <set >
+      <if test="departmentName != null" >
+        department_name = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        modifyed = #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where department_id = #{departmentId,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.wme.rms.entity.department.AdminDepartment" >
+    update admin_department
+    set department_name = #{departmentName,jdbcType=VARCHAR},
+        status = #{status,jdbcType=INTEGER},
+        created = #{created,jdbcType=TIMESTAMP},
+        modifyed = #{modifyed,jdbcType=TIMESTAMP}
+    where department_id = #{departmentId,jdbcType=BIGINT}
+  </update>
+
+  <sql id="page_where">
+	<trim prefix="where" prefixOverrides="and | or ">
+		<if test="departmentId != null and departmentId != ''">and department_id = #{departmentId}</if>
+		<if test="departmentName != null and departmentName != ''">and department_name like concat('%',#{departmentName},'%')</if>
+		<if test="status != null and status != ''">and status = #{status}</if>
+	</trim>
+  </sql>
+
+  <select id="pageList" resultMap="AdminDepartmentResultMap" parameterType="java.util.Map">
+	select department_id,department_name,status,created,modifyed
+	from admin_department
+	<include refid="page_where" />
+	order by department_id desc
+	limit #{startIndex},#{pageSize}
+  </select>
+	
+  <select id="count" resultType="int" parameterType="java.util.Map">
+	select count(department_id)
+	from admin_department
+	<include refid="page_where" />
+  </select>
+  
+</mapper>

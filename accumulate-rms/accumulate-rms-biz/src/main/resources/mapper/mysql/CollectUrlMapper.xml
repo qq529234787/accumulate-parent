@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wme.rms.persistence.mysql.CollectUrlMapper">
+
+  <resultMap id="CollectUrlMap" type="com.wme.rms.entity.collect.CollectUrl" >
+    <id column="collect_id" property="collectId" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="login_name" property="loginName" jdbcType="VARCHAR" />
+    <result column="param" property="param" jdbcType="VARCHAR" />
+    <result column="param_json" property="paramJson" jdbcType="VARCHAR" />
+    <result column="local_addr" property="localAddr" jdbcType="VARCHAR" />
+    <result column="remote_addr" property="remoteAddr" jdbcType="VARCHAR" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    collect_id, login_name, url, param, param_json, local_addr, remote_addr, created
+  </sql>
+  <sql id="condition">
+    <trim prefix="where" prefixOverrides="and | or">
+        1=1
+        <if test="loginName != null and loginName != ''">
+            and login_name like CONCAT('%',#{loginName},'%')
+        </if>
+        <if test="url != null and url != ''">
+            and url like CONCAT('%',#{url},'%')
+        </if>
+    </trim>
+  </sql>
+
+  <select id="get" resultMap="CollectUrlMap" parameterType="java.lang.Long" >
+      select <include refid="Base_Column_List" />
+      from collect_url
+      where collect_id = #{collectId}
+  </select>
+
+  <insert id="save" parameterType="com.wme.rms.entity.collect.CollectUrl" useGeneratedKeys="true" keyProperty="collectId">
+    insert into collect_url (login_name,url, param, param_json, local_addr, remote_addr, created )
+    values (
+      #{loginName},
+      #{url},
+      #{param},
+      #{paramJson},
+      #{localAddr},
+      #{remoteAddr},
+      now()
+    )
+  </insert>
+  
+  <select id="pageList" resultMap="CollectUrlMap" parameterType="java.util.Map">
+    select <include refid="Base_Column_List" />
+    from collect_url <include refid="condition" />
+    order by created desc limit #{startIndex},#{pageSize}
+  </select>
+	
+  <select id="count" resultType="int" parameterType="java.util.Map">
+    select count(1)
+    from collect_url <include refid="condition" />
+  </select>
+
+</mapper>

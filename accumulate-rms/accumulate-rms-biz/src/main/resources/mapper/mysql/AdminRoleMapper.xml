@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminRoleMapper">
+
+  <resultMap id="AdminRoleResultMap" type="com.wme.rms.entity.role.AdminRole" >
+    <id column="role_id" property="roleId" jdbcType="BIGINT" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    role_id, role_name, status, created, modifyed
+  </sql>
+
+  <select id="get" resultMap="AdminRoleResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_role
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectRole" resultMap="AdminRoleResultMap" parameterType="com.wme.rms.entity.role.AdminRole" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_role
+    <trim prefix="where" prefixOverrides="and | or ">
+		<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+		<if test="roleName != null and roleName != ''">and role_name = #{roleName}</if>
+		<if test="status != null and status != ''">and status = #{status}</if>
+	</trim>
+  </select>
+  
+  <select id="selectRoleByUserId" resultMap="AdminRoleResultMap" parameterType="java.lang.Long" >
+    select r.role_id,r.role_name,r.status,r.created,r.modifyed
+    from admin_role r
+      inner join admin_user_role ur on r.role_id = ur.role_id
+    where r.status = 1 and ur.status = 1 and ur.user_id = #{userId}
+  </select>
+  
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from admin_role
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="save" parameterType="com.wme.rms.entity.role.AdminRole" useGeneratedKeys="true" keyProperty="roleId">
+    insert into admin_role
+    (
+        role_id,
+        role_name,
+        status,
+        created,
+        modifyed
+    ) values (
+        #{roleId,jdbcType=BIGINT},
+        #{roleName,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER},
+        #{created,jdbcType=TIMESTAMP},
+        #{modifyed,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.wme.rms.entity.role.AdminRole" >
+    insert into admin_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="roleName != null" >
+        role_name,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="modifyed != null" >
+        modifyed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="roleName != null" >
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wme.rms.entity.role.AdminRole" >
+    update admin_role
+    <set >
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        modifyed = #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.wme.rms.entity.role.AdminRole" >
+    update admin_role
+    set role_name = #{roleName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      created = #{created,jdbcType=TIMESTAMP},
+      modifyed = #{modifyed,jdbcType=TIMESTAMP}
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </update>
+  
+  <sql id="page_where">
+	<trim prefix="where" prefixOverrides="and | or ">
+		<if test="roleId != null and roleId != ''">and role_id = #{roleId}</if>
+		<if test="roleName != null and roleName != ''">and role_name like concat('%',#{roleName},'%')</if>
+		<if test="status != null and status != ''">and status = #{status}</if>
+	</trim>
+  </sql>
+  
+  <select id="pageList" resultMap="AdminRoleResultMap" parameterType="java.util.Map">
+	select <include refid="Base_Column_List" />
+	from admin_role <include refid="page_where" />
+	order by role_id desc limit #{startIndex},#{pageSize}
+  </select>
+	
+  <select id="count" resultType="int" parameterType="java.util.Map">
+	select count(role_id)
+	from admin_role <include refid="page_where" />
+  </select>
+  
+</mapper>

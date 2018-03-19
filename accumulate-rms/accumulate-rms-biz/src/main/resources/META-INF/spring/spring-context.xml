@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <context:property-placeholder location="classpath*:*.properties"/>
+
+    <!-- mysql start -->
+    <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="url" value="${druid.mysql.url}" />
+        <property name="username" value="${druid.mysql.username}" />
+        <property name="password" value="${druid.mysql.password}" />
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="${druid.mysql.maxActive}" />
+        <property name="minIdle" value="${druid.mysql.maxIdle}" />
+        <property name="maxWait" value="${druid.mysql.maxWait}" />
+        <property name="validationQuery" value="SELECT 'x' from dual" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
+        <property name="testWhileIdle" value="true" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1800" />
+        <property name="logAbandoned" value="true" />
+        <property name="filters" value="mergeStat" />
+    </bean>
+    <!-- transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!-- define the SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" name="mysqlSqlSessionFactory">
+        <property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="com.wme.rms.entity" />
+        <property name="configLocation" value="classpath:mapper/mybatis-config.xml"></property>
+        <property name="mapperLocations">
+            <list>
+                <value>classpath*:mapper/mysql/*Mapper.xml</value>
+                <value>classpath*:mapper/BaseMapper.xml</value>
+            </list>
+        </property>
+    </bean>
+    <!-- scan for mappers and let them be autowired -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.wme.rms.persistence.mysql" />
+        <property name="sqlSessionFactoryBeanName" value="mysqlSqlSessionFactory"/>
+    </bean>
+    <!-- mysql end -->
+
+    <!-- enable transaction demarcation with annotations -->
+    <tx:annotation-driven/>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!-- enable component scanning and autowire (beware that this does not enable mapper scanning!) -->
+    <context:component-scan base-package="com.wme.rms"/>
+</beans>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+       <bean name="memcachedClientBuilder" class="net.rubyeye.xmemcached.XMemcachedClientBuilder">
+              <!-- XMemcachedClientBuilder have two arguments.First is server list,and second is weights array. -->
+              <constructor-arg>
+                     <list>
+                            <bean class="java.net.InetSocketAddress">
+                                   <constructor-arg>
+                                          <value>${memcache.host.1}</value>
+                                   </constructor-arg>
+                                   <constructor-arg>
+                                          <value>${memcache.port.1}</value>
+                                   </constructor-arg>
+                            </bean>
+                            <bean class="java.net.InetSocketAddress">
+                                   <constructor-arg>
+                                          <value>${memcache.host.2}</value>
+                                   </constructor-arg>
+                                   <constructor-arg>
+                                          <value>${memcache.port.2}</value>
+                                   </constructor-arg>
+                            </bean>
+                     </list>
+              </constructor-arg>
+              <constructor-arg>
+                     <list>
+                            <value>1</value>
+                            <value>2</value>
+                     </list>
+              </constructor-arg>
+              <property name="connectionPoolSize" value="${memcache.poolsize}"></property>
+              <property name="commandFactory">
+                     <bean class="net.rubyeye.xmemcached.command.TextCommandFactory"></bean>
+              </property>
+              <property name="sessionLocator">
+                     <bean class="net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator"></bean>
+              </property>
+              <property name="transcoder">
+                     <bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder" />
+              </property>
+       </bean>
+       <!-- Use factory bean to build memcached client -->
+       <bean name="memcachedClient1" factory-bean="memcachedClientBuilder" factory-method="build" destroy-method="shutdown"/>
+       <bean name="memcachedClient2" factory-bean="memcachedClientBuilder" factory-method="build" destroy-method="shutdown"/>
+
+       <bean id="memcachedClientList" class="java.util.ArrayList">
+              <constructor-arg>
+                     <list>
+                            <ref bean="memcachedClient1" />
+                            <ref bean="memcachedClient2" />
+                     </list>
+              </constructor-arg>
+       </bean>
+
+</beans>

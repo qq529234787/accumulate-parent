@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminPropertyRoleMapper">
+
+  <resultMap id="BaseResultMap" type="com.wme.rms.entity.role.AdminPropertyRole" >
+    <id column="menu_role_id" property="menuRoleId" jdbcType="BIGINT" />
+    <result column="property_id" property="propertyId" jdbcType="BIGINT" />
+    <result column="role_id" property="roleId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="MenuTreeResultMap" type="com.wme.base.utils.ZTreeJson" >
+    <id column="menu_id" property="id" />
+    <result column="parent_id" property="pId" />
+    <result column="menu_name" property="name" />
+    <result column="checked" property="checked" />
+    <result column="open" property="open" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    menu_role_id, property_id, role_id, status, created, modifyed
+  </sql>
+
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_property_role
+    where menu_role_id = #{menuRoleId,jdbcType=BIGINT}
+  </select>
+
+  <delete id="delete" parameterType="java.lang.Long" >
+    delete from admin_property_role
+    where menu_role_id = #{menuRoleId,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="save" parameterType="com.wme.rms.entity.role.AdminPropertyRole" >
+    insert into admin_property_role
+      (
+        menu_role_id,
+        property_id,
+        role_id,
+        status,
+        created,
+        modifyed
+      )
+    values (
+        #{menuRoleId,jdbcType=BIGINT},
+        #{propertyId,jdbcType=BIGINT},
+        #{roleId,jdbcType=BIGINT},
+        #{status,jdbcType=INTEGER},
+        #{created,jdbcType=TIMESTAMP},
+        #{modifyed,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  
+  <!-- 批量添加 适用于主键自增类型  不支持返回主键-->
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">
+    insert into admin_property_role
+    (
+      menu_role_id,
+      property_id,
+      role_id,
+      status,
+      created,
+      modifyed
+    ) values
+	<foreach item="item" collection="list" separator="," >
+      (
+        #{item.menuRoleId},
+        #{item.propertyId},
+        #{item.roleId},
+        #{item.status},
+        #{item.created},
+        #{item.modifyed}
+      )
+	</foreach>
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.wme.rms.entity.role.AdminPropertyRole" >
+    insert into admin_property_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="menuRoleId != null" >
+        menu_role_id,
+      </if>
+      <if test="propertyId != null" >
+        property_id,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="modifyed != null" >
+        modifyed,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="menuRoleId != null" >
+        #{menuRoleId,jdbcType=BIGINT},
+      </if>
+      <if test="propertyId != null" >
+        #{propertyId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wme.rms.entity.role.AdminPropertyRole" >
+    update admin_property_role
+    <set >
+      <if test="propertyId != null" >
+        property_id = #{propertyId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyed != null" >
+        modifyed = #{modifyed,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where menu_role_id = #{menuRoleId,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.wme.rms.entity.role.AdminPropertyRole" >
+    update admin_property_role
+    set property_id = #{propertyId,jdbcType=BIGINT},
+      role_id = #{roleId,jdbcType=BIGINT},
+      status = #{status,jdbcType=INTEGER},
+      created = #{created,jdbcType=TIMESTAMP},
+      modifyed = #{modifyed,jdbcType=TIMESTAMP}
+    where menu_role_id = #{menuRoleId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteByRoleId" parameterType="com.wme.rms.entity.role.AdminPropertyRole" >
+    update admin_property_role
+    set status = #{status}, modifyed = #{modifyed}
+    where role_id = #{roleId}
+  </update>
+  
+  <select id="selectCheckedMenu" resultMap="MenuTreeResultMap" parameterType="java.lang.Long">
+    select m.menu_id,m.parent_id,m.menu_name,
+      (case when p.property_id is null then 'false' else 'true' end) as checked,
+      (case when p.property_id is null then 'false' else 'true' end) as open
+    from admin_menu m
+      left join admin_property_role p on m.menu_id = p.property_id
+    and p.status = 1
+    and p.role_id = #{roleId}
+    where m.status = 1
+  </select>
+  
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>accumulate-rms</artifactId>
+        <groupId>com.wme</groupId>
+        <version>${publish_version}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>accumulate-rms-bundle</artifactId>
+    <packaging>war</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.wme</groupId>
+            <artifactId>accumulate-rms-biz</artifactId>
+            <version>${publish_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wme</groupId>
+            <artifactId>accumulate-rms-web</artifactId>
+            <version>${publish_version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

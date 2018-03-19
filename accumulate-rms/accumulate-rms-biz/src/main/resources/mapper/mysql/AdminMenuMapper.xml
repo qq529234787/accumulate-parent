@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wme.rms.persistence.mysql.AdminMenuMapper">
+
+  <resultMap id="BaseResultMap" type="com.wme.rms.entity.menu.AdminMenu" >
+    <id column="menu_id" property="menuId" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="menu_link" property="menuLink" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+    <result column="seq" property="seq" jdbcType="INTEGER" />
+    <result column="menu_level" property="menuLevel" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modifyed" property="modifyed" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="MenuTreeResultMap" type="com.wme.base.utils.ZTreeJson" >
+    <id column="menu_id" property="id" />
+    <result column="parent_id" property="pId" />
+    <result column="menu_name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    menu_id, parent_id, menu_link, code, menu_name, seq, menu_level, status, created, modifyed
+  </sql>
+
+  <sql id="page_where">
+    where status != -1
+    and parent_id = #{parentId}
+    <if test="menuName != null and menuName != ''">and menu_name like concat('%',#{menuName},'%')</if>
+    <if test="menuLink != null and menuLink != ''">and menu_link like concat('%',#{menuLink},'%')</if>
+    <if test="code != null and code != ''">and code like concat('%',#{code},'%')</if>
+  </sql>
+
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from admin_menu
+    where menu_id = #{menuId} and status = 1
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    update admin_menu set status=-1,modifyed=now()
+    where menu_id = #{menuId} and status=1
+  </update>
+    
+  <insert id="save" parameterType="com.wme.rms.entity.menu.AdminMenu" useGeneratedKeys="true" keyProperty="menuId">
+    insert into admin_menu (parent_id, menu_link, code, menu_name, seq, menu_level, status, created, modifyed)
+    values (#{parentId}, #{menuLink}, #{code}, #{menuName}, #{seq}, #{menuLevel},  #{status}, now(), now())
+  </insert>
+
+  <update id="update" parameterType="com.wme.rms.entity.menu.AdminMenu" >
+    update admin_menu
+    set parent_id = #{parentId},
+      menu_link = #{menuLink},
+      code = #{code},
+      menu_name = #{menuName},
+      seq = #{seq},
+      menu_level = #{menuLevel},
+      modifyed = now()
+    where menu_id = #{menuId}
+  </update>
+
+  <select id="queryMenuListByMenuId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from admin_menu
+    where parent_id = #{parentId} and status=1 order by seq asc
+  </select>
+  
+  <select id="selectAllMenu" resultMap="MenuTreeResultMap" >
+    select menu_id,parent_id,menu_name
+    from admin_menu
+    where status = 1
+  </select>
+
+  <select id="pageList" resultMap="BaseResultMap" parameterType="java.util.Map">
+	select 
+	<include refid="Base_Column_List" />
+	from admin_menu
+	<include refid="page_where" />
+	order by seq asc
+	limit #{startIndex},#{pageSize}
+  </select>
+	
+  <select id="count" resultType="int" parameterType="java.util.Map">
+	select count(menu_id)
+	from admin_menu
+	<include refid="page_where" />
+  </select>
+
+  <select id="selectAllowMenu" resultMap="BaseResultMap" parameterType="java.util.Map">
+	select distinct m.menu_id,m.menu_link,m.menu_name,m.code,m.seq,m.parent_id,m.menu_level
+	from admin_menu m
+	inner join admin_property_role p
+	on m.menu_id = p.property_id
+	and m.status = 1 and p.status = 1
+	where p.role_id in (
+		select r.role_id 
+		from admin_user_role r
+		inner join admin_user u
+		on r.user_id = u.user_id
+	    and r.status = 1 and u.status = 1
+	    where u.login_name = #{loginName}
+	)
+	<![CDATA[and m.menu_level < #{menuLevel}]]>
+  </select>
+
+  <select id="selectMenu" resultMap="BaseResultMap" parameterType="com.wme.rms.entity.menu.AdminMenu" >
+    select
+    <include refid="Base_Column_List" />
+    from admin_menu
+    where status != -1
+        <if test="menuName != null and menuName != ''">and menu_name = #{menuName}</if>
+        <if test="menuLink != null and menuLink != ''">and menu_link = #{menuLink}</if>
+        <if test="code != null and code != ''">and code = #{code}</if>
+  </select>
+
+</mapper>
