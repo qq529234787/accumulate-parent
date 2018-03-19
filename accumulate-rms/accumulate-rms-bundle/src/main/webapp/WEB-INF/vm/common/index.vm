@@ -1,7 +1,0 @@
-#set($layout="WEB-INF/vm/layout/index-layout.vm")
-#parse("/WEB-INF/vm/common/frame-top.vm")
-#parse("/WEB-INF/vm/common/menu.vm")
-<div class="main">
-    <iframe name="right" id="mainframe" src="/welcome.jtml" frameborder="no" scrolling="auto"
-            width="100%" height="auto" allowtransparency="true"></iframe>
-</div>
