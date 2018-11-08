@@ -36,5 +36,5 @@ Windows平台：
 
 Linxu/MacOS平台
 1.安装lftp工具：
-详细过程请参阅Wiki：http://wiki.corpautohome.com/pages/viewpage.action?pageId=77534975
+。。。
 2.将通用步骤4中的FTP配置文件放到"~"目录下。
